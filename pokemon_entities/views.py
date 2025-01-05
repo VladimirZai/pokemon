@@ -1,7 +1,7 @@
 import folium
 import json
 
-from datetime import datetime
+from django.utils import timezone
 
 from django.http import HttpResponseNotFound, HttpResponseBadRequest
 from django.shortcuts import render
@@ -42,8 +42,8 @@ def show_all_pokemons(request):
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
 
     for pokemon_entity in PokemonEntity.objects.filter(
-        appeared_at__lte=datetime.now(),
-        disappeared_at__gte=datetime.now(),
+        appeared_at__lte=timezone.now(),
+        disappeared_at__gte=timezone.now(),
     ):
         add_pokemon(
             folium_map,
@@ -79,7 +79,9 @@ def show_pokemon(request, pokemon_id):
         )
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
-    for pokemon_entity in PokemonEntity.objects.filter(pokemon=requested_pokemon):
+    for pokemon_entity in PokemonEntity.objects.filter(pokemon=requested_pokemon,
+                                appeared_at__lte=timezone.now(),
+                                disappeared_at__gte=timezone.now()):
         add_pokemon(
             folium_map,
             pokemon_entity.lat,
@@ -93,8 +95,7 @@ def show_pokemon(request, pokemon_id):
         "title_en": requested_pokemon.title_en,
         "title_jp": requested_pokemon.title_jp,
         "description": requested_pokemon.description,
-        "img_url": request.build_absolute_uri(
-                    pokemon_entity.pokemon.image.url),
+        "img_url": request.build_absolute_uri(requested_pokemon.image.url),
     }
 
 

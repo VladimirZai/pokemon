@@ -19,16 +19,18 @@ DEFAULT_IMAGE_URL = (
 
 def add_pokemon(folium_map, lat, lon, image_url=DEFAULT_IMAGE_URL):
     try:
-        icon = folium.features.CustomIcon(
-            image_url,
-            icon_size=(50, 50),
-        )
-        folium.Marker(
-            [lat, lon],
-            # Warning! `tooltip` attribute is disabled intentionally
-            # to fix strange folium cyrillic encoding bug
-            icon=icon,
-        ).add_to(folium_map)
+        if image_url:
+            full_image_url = image_url
+            icon = folium.features.CustomIcon(
+                full_image_url,
+                icon_size=(50, 50),
+            )
+            folium.Marker(
+                [lat, lon],
+                # Warning! `tooltip` attribute is disabled intentionally
+                # to fix strange folium cyrillic encoding bug
+                icon=icon,
+            ).add_to(folium_map)
     except Exception as e:
         logger.error(f"Ошибка в добавлении покемона: {e}")
 
@@ -38,11 +40,15 @@ def show_all_pokemons(request):
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
 
     for pokemon_entity in PokemonEntity.objects.all():
+        image_url = None
+        if pokemon_entity.pokemon.image:
+            image_url = pokemon_entity.pokemon.image.url
+        full_image_url = request.build_absolute_uri(image_url) if image_url else DEFAULT_IMAGE_URL
         add_pokemon(
             folium_map,
             pokemon_entity.lat,
             pokemon_entity.lon,
-            pokemon_entity.pokemon.image.url if pokemon_entity.pokemon.image else None
+            full_image_url
         )
 
     pokemons_on_page = []

@@ -1,8 +1,7 @@
 from django.db import models
 
 class Pokemon(models.Model):
-    id = models.AutoField(auto_created=True, primary_key=True, )
-    title = models.CharField(max_length=200, blank=True, verbose_name='Название')
+    title = models.CharField(max_length=200, verbose_name='Название')
     title_en = models.CharField(max_length=200, blank=True, verbose_name='Название (англ.)')
     title_jp = models.CharField(max_length=200, blank=True, verbose_name='Название (яп.)')
     description = models.TextField(blank=True, verbose_name='Описание')

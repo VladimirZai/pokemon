@@ -1,12 +1,14 @@
-import folium
 import json
+import logging
 
+from django.http import HttpResponseBadRequest, HttpResponseNotFound
+from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 
-from django.http import HttpResponseNotFound, HttpResponseBadRequest
-from django.shortcuts import render, get_object_or_404
+import folium
+
 from .models import Pokemon, PokemonEntity
-import logging
+
 
 
 logger = logging.getLogger(__name__)
